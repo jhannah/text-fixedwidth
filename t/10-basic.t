@@ -31,6 +31,7 @@ ok($fw->set_fname("f" x 20),                   "set_fname()");
 ok($fw->set_lname("l" x 20),                   "set_lname()");
 is($fw->get_fname(), "f" x 10,                 "set_fname()");
 is($fw->get_lname(), "l" x 10,                 "set_lname()");
+
 warning_like 
     { $fw->set_mi("xxxxx") } 
     { carped => qr/Can't set_mi.* Value must be 1 characters or shorter/ }, 
