@@ -12,11 +12,11 @@ Text::FixedWidth - Easy OO manipulation of fixed width text files.
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 
 =head1 SYNOPSIS
@@ -185,6 +185,8 @@ sub auto_truncate {
    return 1;
 }
 
+
+sub DESTROY { }
 
 # Using Damian methodology so I don't need to require Moose.
 #    Object Oriented Perl (1st edition)
