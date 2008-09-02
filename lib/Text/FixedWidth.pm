@@ -240,11 +240,10 @@ sub AUTOLOAD {
 =head1 ALTERNATIVES
 
 Other modules that do similar things that you might like:
-Parse::FixedLength,
-Text::FixedLength,
-Data::FixedFormat,
-AnyData::Format::Fixed 
-
+L<Parse::FixedLength>,
+L<Text::FixedLength>,
+L<Data::FixedFormat>,
+L<AnyData::Format::Fixed>
 
 =head1 AUTHOR
 
