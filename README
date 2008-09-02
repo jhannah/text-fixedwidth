@@ -1,0 +1,60 @@
+Text-FixedWidth
+
+Easy OO manipulation of fixed width text files.
+
+   use Text::FixedWidth;
+   my $fw = new Text::FixedWidth, "new()");
+   $fw->set_attributes(qw(
+      fname            undef  %10s
+      lname            undef  %-10s
+      points           0      %04d
+   );
+   $fw->parse(message => "       JayHannah    0003");
+   print $fw->get_fname;   # Jay
+   print $fw->get_lname;   # Hannah
+   print $fw->get_points;  # 0003
+
+   $fw->set_fname('Chuck');
+   $fw->set_lname('Norris');
+   $fw->set_points(17);
+   print $fw->string;      #  '     ChuckNorris    0017'
+
+
+INSTALLATION
+
+To install this module, run the following commands:
+
+	perl Makefile.PL
+	make
+	make test
+	make install
+
+SUPPORT AND DOCUMENTATION
+
+After installing, you can find documentation for this module with the
+perldoc command.
+
+    perldoc Text::FixedWidth
+
+You can also look for information at:
+
+    RT, CPAN's request tracker
+        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Text-FixedWidth
+
+    AnnoCPAN, Annotated CPAN documentation
+        http://annocpan.org/dist/Text-FixedWidth
+
+    CPAN Ratings
+        http://cpanratings.perl.org/d/Text-FixedWidth
+
+    Search CPAN
+        http://search.cpan.org/dist/Text-FixedWidth
+
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2008 Jay Hannah
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
