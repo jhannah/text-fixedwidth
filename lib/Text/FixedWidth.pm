@@ -5,6 +5,11 @@ use strict;
 use Carp;
 use vars ('$AUTOLOAD');
 
+# -----------------------------------
+# This source in my SVN repository.
+my $HeadURL = '$HeadURL$';
+my $Id      = '$Id$';
+# -----------------------------------
 
 =head1 NAME
 
