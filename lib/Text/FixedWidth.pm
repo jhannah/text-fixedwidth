@@ -13,15 +13,15 @@ my $Id      = '$Id$';
 
 =head1 NAME
 
-Text::FixedWidth - Easy OO manipulation of fixed width text files.
+Text::FixedWidth - Easy OO manipulation of fixed width text files
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 
 =head1 SYNOPSIS
@@ -254,7 +254,7 @@ L<AnyData::Format::Fixed>
 
 =head1 AUTHOR
 
-Jay Hannah, C<< <jay at jays.net> >>
+Jay Hannah, C<< <jay at jays.net> >>, http://jays.net
 
 =head1 BUGS
 
