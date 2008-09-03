@@ -3,21 +3,23 @@ Text-FixedWidth
 Easy OO manipulation of fixed width text files.
 
    use Text::FixedWidth;
-   my $fw = new Text::FixedWidth, "new()");
+
+   my $fw = new Text::FixedWidth;
    $fw->set_attributes(qw(
       fname            undef  %10s
       lname            undef  %-10s
       points           0      %04d
-   );
-   $fw->parse(message => "       JayHannah    0003");
-   print $fw->get_fname;   # Jay
-   print $fw->get_lname;   # Hannah
-   print $fw->get_points;  # 0003
+   ));
+
+   $fw->parse(string => '       JayHannah    0003');
+   $fw->get_fname;               # Jay
+   $fw->get_lname;               # Hannah
+   $fw->get_points;              # 0003
 
    $fw->set_fname('Chuck');
    $fw->set_lname('Norris');
    $fw->set_points(17);
-   print $fw->string;      #  '     ChuckNorris    0017'
+   $fw->string;                  # '     ChuckNorris    0017'
 
 
 INSTALLATION

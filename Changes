@@ -1,5 +1,8 @@
 Revision history for Text-FixedWidth
 
+0.03    2008-09-03
+        Fixing POD, general cleanup
+
 0.02    2008-09-02
         Fixing META.yml
 

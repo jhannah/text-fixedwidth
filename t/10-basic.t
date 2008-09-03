@@ -19,7 +19,7 @@ is($fw->get_fname, 'Jay',                      "get_fname()");
 is($fw->get_mi, 'W',                           "get_mi()");
 is($fw->get_lname, 'Hannah',                   "get_lname()");
 is($fw->string, "       JayWHannah    0003",   "string()");
-ok($fw->parse(message => "     ChuckWNorris    0017"),   "parse()");
+ok($fw->parse(string => "     ChuckWNorris    0017"),   "parse()");
 is($fw->get_fname, 'Chuck',                    "get_fname()");
 is($fw->get_mi, 'W',                           "get_mi()");
 is($fw->get_lname, 'Norris',                   "get_lname()");

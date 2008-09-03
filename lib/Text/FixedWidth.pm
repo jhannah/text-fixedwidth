@@ -12,31 +12,33 @@ Text::FixedWidth - Easy OO manipulation of fixed width text files.
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 
 =head1 SYNOPSIS
 
    use Text::FixedWidth;
-   my $fw = new Text::FixedWidth, "new()");
+
+   my $fw = new Text::FixedWidth;
    $fw->set_attributes(qw(
       fname            undef  %10s
       lname            undef  %-10s
       points           0      %04d
-   );
-   $fw->parse(message => "       JayHannah    0003");
-   print $fw->get_fname;   # Jay
-   print $fw->get_lname;   # Hannah
-   print $fw->get_points;  # 0003
+   ));
+
+   $fw->parse(string => '       JayHannah    0003');
+   $fw->get_fname;               # Jay
+   $fw->get_lname;               # Hannah
+   $fw->get_points;              # 0003
 
    $fw->set_fname('Chuck');
    $fw->set_lname('Norris');
    $fw->set_points(17);
-   print $fw->string;      #  '     ChuckNorris    0017'
+   $fw->string;                  # '     ChuckNorris    0017'
 
 If you're familiar with printf formats, then this class should make processing
 fixed width files trivial.
@@ -52,7 +54,7 @@ care about.
 
 =head2 new
 
-Constructor. See SYNOPSIS.
+Constructor. Does nothing fancy.
 
 =cut
 
@@ -72,7 +74,7 @@ Pass in arguments in sets of 3 and we'll set up attributes for you.
 
 The first argument is the attribute name. The second argument is the default
 value we should use until told otherwise. The third is the printf format we should
-use to read or write this attribute from/to a string.
+use to read and write this attribute from/to a string.
 
   $fw->set_attributes(qw(
     fname            undef  %10s
@@ -107,22 +109,22 @@ sub set_attributes {
 
 =head2 parse
 
-Parse a string. Set each attribute to the value listed in the string.
+Parses the string you hand in. Sets each attribute to the value it finds in the string.
 
-  $fw->parse(message => "       JayHannah    0003");
+  $fw->parse(string => '       JayHannah    0003');
 
 =cut
 
 sub parse {
    my ($self, %args) = @_;
 
-   die ref($self).":Please provide a message argument" if (!$args{message});
-   my $message = $args{message};
+   die ref($self).":Please provide a string argument" if (!$args{string});
+   my $string = $args{string};
 
    my $offset = 0;
    foreach (@{$self->{_attribute_order}}) {
       my $length = $self->{_attributes}{$_}{length};
-      $self->{_attributes}{$_}{value}  = substr $message, $offset, $length;
+      $self->{_attributes}{$_}{value}  = substr $string, $offset, $length;
       $offset += $length;
    }
 
@@ -133,7 +135,7 @@ sub parse {
 =head2 string
 
 Dump the object to a string. Walks each attribute in order and outputs each in the
-format that was specified during set_attributes.
+format that was specified during set_attributes().
 
   print $fw->string;      #  '     ChuckNorris    0017'
 
@@ -239,7 +241,7 @@ sub AUTOLOAD {
 
 =head1 ALTERNATIVES
 
-Other modules that do similar things that you might like:
+Other modules that may do similar things: 
 L<Parse::FixedLength>,
 L<Text::FixedLength>,
 L<Data::FixedFormat>,
