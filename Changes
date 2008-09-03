@@ -2,6 +2,7 @@ Revision history for Text-FixedWidth
 
 0.04    2008-09-03
         Added SVN tags so I don't forget where this lives.  :)
+        t/boilerplate.t tasks are done, so removed TODO-ishness
 
 0.03    2008-09-03
         Fixing POD, general cleanup
