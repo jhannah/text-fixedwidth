@@ -1,11 +1,9 @@
 Changes
-lib/Text/FixedWidth.pm
-Makefile.PL
-META.yml
 MANIFEST
+Makefile.PL
 README
+lib/Text/FixedWidth.pm
 t/00-load.t
 t/10-basic.t
-t/boilerplate.t
 t/pod-coverage.t
 t/pod.t
