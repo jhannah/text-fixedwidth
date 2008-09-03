@@ -1,5 +1,8 @@
 Revision history for Text-FixedWidth
 
+0.04    2008-09-03
+        Added SVN tags so I don't forget where this lives.  :)
+
 0.03    2008-09-03
         Fixing POD, general cleanup
 
