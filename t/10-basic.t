@@ -2,6 +2,12 @@ use Test::More(tests => 26);
 use Test::Warn;
 use Text::FixedWidth;
 
+# -----------------------------------------------
+# This source lives in my SVN repository. 
+my $HeadURL = '$HeadURL$';
+my $Id      = '$Id$';
+# -----------------------------------------------
+
 ok(my $fw = new Text::FixedWidth, "new()");
 ok($fw->set_attributes(qw(
       fname            undef  %10s

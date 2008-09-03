@@ -5,11 +5,11 @@ use strict;
 use Carp;
 use vars ('$AUTOLOAD');
 
-# -----------------------------------
-# This source in my SVN repository.
+# -----------------------------------------------
+# This source lives in my SVN repository. 
 my $HeadURL = '$HeadURL$';
 my $Id      = '$Id$';
-# -----------------------------------
+# -----------------------------------------------
 
 =head1 NAME
 
@@ -17,11 +17,11 @@ Text::FixedWidth - Easy OO manipulation of fixed width text files.
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 
 =head1 SYNOPSIS
