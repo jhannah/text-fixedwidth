@@ -159,7 +159,7 @@ sub string {
          warn "string() error! Length of $_ cannot exceed $length, but it does. Please shorten the value '$value'";
          return 0;
       }
-      my $tmp = sprintf($sprintf, $value);
+      my $tmp = sprintf($sprintf, $value || "");
       if (length($tmp) != $length) {
          die "Ack! " . ref($self) . " is loaded with an sprintf format which returns a string that is NOT the correct length! Please correct the class! The error occured on attribute '$_' converting value '$value' via sprintf '$sprintf', which is '$tmp', which is not '$length' characters long";
       }
@@ -187,6 +187,10 @@ sub auto_truncate {
    my ($self, @attrs) = @_;
    $self->{_auto_truncate} = {};
    foreach my $attr (@attrs) {
+      unless ($self->{_attributes}{$attr}) {
+         carp "Can't auto_truncate attribute '$attr' because that attribute does not exist";
+         next;
+      }
       $self->{_auto_truncate}->{$attr} = 1;
    }
    return 1;
@@ -221,15 +225,15 @@ sub AUTOLOAD {
       my $val  = $_[1];
       croak "Can't set_$att(). No such attribute: $att" unless (defined $self->{_attributes}{$att});
       if (defined $self->{_attributes}{$att}) {
-        if (length($val) > $self->{_attributes}{$att}{length}) {
-           if ($self->{_auto_truncate}{$att}) {
-              $val = substr($val, 0, $self->{_attributes}{$att}{length});
-              $self->{_attributes}{$att}{value} = $val;
-           } else {
-              carp "Can't set_$att('$val'). Value must be " .
-                 $self->{_attributes}{$att}{length} . " characters or shorter";
-              return undef;
-           }
+        if (defined $val && length($val) > $self->{_attributes}{$att}{length}) {
+          if ($self->{_auto_truncate}{$att}) {
+            $val = substr($val, 0, $self->{_attributes}{$att}{length});
+            $self->{_attributes}{$att}{value} = $val;
+          } else {
+            carp "Can't set_$att('$val'). Value must be " .
+              $self->{_attributes}{$att}{length} . " characters or shorter";
+            return undef;
+          }
         }
         $self->{_attributes}{$att}{value} = $val;
         return 1;
@@ -288,12 +292,16 @@ L<http://cpanratings.perl.org/d/Text-FixedWidth>
 
 L<http://search.cpan.org/dist/Text-FixedWidth>
 
+=item * Source code
+
+svn checkout https://clabsvn.ist.unomaha.edu/anonsvn/user/jhannah/Text-FixedWidth
+
 =back
 
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2008 Jay Hannah, all rights reserved.
+Copyright 2008-2009 Jay Hannah, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.

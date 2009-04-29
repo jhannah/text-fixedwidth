@@ -1,5 +1,9 @@
 Revision history for Text-FixedWidth
 
+0.05    2009-04-29
+        - Suppress spurious warnings when at attribute is explicitly set to undef.
+        - Carp out a warning if the user tries to set auto_truncate() on an attribute that doesn't exit.
+
 0.04    2008-09-03
         Added SVN tags so I don't forget where this lives.  :)
         t/boilerplate.t tasks are done, so removed TODO-ishness
