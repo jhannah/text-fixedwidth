@@ -1,13 +1,7 @@
-use Test::More(tests => 27);
+use Test::More(tests => 29);
 use Test::Warn;
 use Text::FixedWidth;
 use warnings;
-
-# -----------------------------------------------
-# This source lives in my SVN repository. 
-my $HeadURL = '$HeadURL$';
-my $Id      = '$Id$';
-# -----------------------------------------------
 
 ok(my $fw = new Text::FixedWidth, "new()");
 ok($fw->set_attributes(qw(
@@ -56,5 +50,12 @@ warning_like
     { $fw->auto_truncate("bogus") } 
     { carped => qr/Can't auto_truncate attribute .* does not exist/ }, 
     "auto_truncate('bogus') throws warning";
+
+ok($fw->set_points(""),                        "set a numeric to zero-length string");
+warning_like 
+    { $fw->string } 
+    qr/Text::FixedWidth attribute 'points' contains '' which is not numeric/,
+    "string() for non-numerics formatted for numeric throws warning";
+
 
 

@@ -1,5 +1,9 @@
 Revision history for Text-FixedWidth
 
+0.06    2009-06-15
+        Added more helpful warning instead of this Perl warning:
+        Argument "" isn't numeric in sprintf at Text/FixedWidth.pm line 162.
+
 0.05    2009-04-29
         - Suppress spurious warnings when at attribute is explicitly set to undef.
         - Carp out a warning if the user tries to set auto_truncate() on an attribute that doesn't exit.

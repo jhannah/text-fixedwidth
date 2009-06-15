@@ -5,24 +5,13 @@ use strict;
 use Carp;
 use vars ('$AUTOLOAD');
 
-# -----------------------------------------------
-# This source lives in my SVN repository. 
-my $HeadURL = '$HeadURL$';
-my $Id      = '$Id$';
-# -----------------------------------------------
-
 =head1 NAME
 
 Text::FixedWidth - Easy OO manipulation of fixed width text files
 
-=head1 VERSION
-
-Version 0.05
-
 =cut
 
-our $VERSION = '0.05';
-
+our $VERSION = '0.06';
 
 =head1 SYNOPSIS
 
@@ -150,18 +139,30 @@ sub string {
    my ($self) = @_;
 
    my ($value, $length, $sprintf, $return);
-   foreach (@{$self->{_attribute_order}}) {
-      $value   = $self->{_attributes}{$_}{value};
-      $length  = $self->{_attributes}{$_}{length};
-      $sprintf = $self->{_attributes}{$_}{sprintf};
+   foreach my $att (@{$self->{_attribute_order}}) {
+      $value   = $self->{_attributes}{$att}{value};
+      $length  = $self->{_attributes}{$att}{length};
+      $sprintf = $self->{_attributes}{$att}{sprintf};
 
       if (defined ($value) and length($value) > $length) {
-         warn "string() error! Length of $_ cannot exceed $length, but it does. Please shorten the value '$value'";
+         warn "string() error! Length of $att cannot exceed $length, but it does. Please shorten the value '$value'";
          return 0;
       }
-      my $tmp = sprintf($sprintf, $value || "");
+
+      my $tmp;
+      if (
+         $sprintf =~ /\%\d*[duoxefgXEGbB]/ && (       # perldoc -f sprintf
+            $value eq "" ||
+            $value !~ /^(\d+\.?\d*|\.\d+)$/        # match valid number
+         )
+      ) {
+         warn "string() error! " . ref($self) . " attribute '$att' contains '$value' which is not numeric, yet the sprintf '$sprintf' appears to be numeric. Using 0";
+         $value = 0;
+      }
+      $tmp = sprintf($sprintf, (defined $value ? $value : ""));
+
       if (length($tmp) != $length) {
-         die "Ack! " . ref($self) . " is loaded with an sprintf format which returns a string that is NOT the correct length! Please correct the class! The error occured on attribute '$_' converting value '$value' via sprintf '$sprintf', which is '$tmp', which is not '$length' characters long";
+         die "string() error! " . ref($self) . " is loaded with an sprintf format which returns a string that is NOT the correct length! Please correct the class! The error occured on attribute '$att' converting value '$value' via sprintf '$sprintf', which is '$tmp', which is not '$length' characters long";
       }
 
       $return .= $tmp;
@@ -294,7 +295,7 @@ L<http://search.cpan.org/dist/Text-FixedWidth>
 
 =item * Source code
 
-svn checkout https://clabsvn.ist.unomaha.edu/anonsvn/user/jhannah/Text-FixedWidth
+L<http://github.com/jhannah/text-fixedwidth>
 
 =back
 
