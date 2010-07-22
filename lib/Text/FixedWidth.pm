@@ -5,6 +5,21 @@ use strict;
 use Carp;
 use vars ('$AUTOLOAD');
 
+our $_CLONE_METHODS = [
+   {
+      package => 'Clone::Fast',
+      method => 'clone'
+   },
+   {
+      package => 'Clone::More',
+      method => 'clone'
+   },
+   {
+      package => 'Storage',
+      method => 'dclone'
+   }
+];
+
 =head1 NAME
 
 Text::FixedWidth - Easy OO manipulation of fixed width text files
@@ -114,6 +129,8 @@ sub parse {
 
    die ref($self).":Please provide a string argument" if (!$args{string});
    my $string = $args{string};
+   
+   $self = $self->clone if $args{clone};
 
    my $offset = 0;
    foreach (@{$self->{_attribute_order}}) {
@@ -122,7 +139,7 @@ sub parse {
       $offset += $length;
    }
 
-   return 1;
+   return $args{clone}? $self : 1;
 }
 
 
@@ -198,6 +215,50 @@ sub auto_truncate {
    }
    return 1;
 }
+
+=head2 clone
+
+Provides a clone of a Text::FixedWidth object. If available it will attempt
+to use L<Clone::Fast> or L<Clone::More> falling back on L<Storable/dclone>.
+
+   my $fw_copy = $fw->clone;
+
+This method is most useful when being called from with in the L</parse> method.
+
+   while( my $row = $fw->parse( clone => 1, string => $str ) ) {
+      print $row->foobar;
+   }
+
+See L</parse> for further information.
+
+=cut
+
+sub clone {
+   my $self = shift;
+   
+   unless ( ref( $self->{_clone_method} ) == 'CODE' ) {
+      foreach( @{ $_CLONE_METHODS } ) {
+         my $package = $_->{package};
+         my $method  = $_->{method};
+         
+         eval qq{
+            require $package;
+            $package->import();
+         };
+         
+         unless( $@ ) {
+            $self->{_clone_method} = sub {
+               $package->$method(shift);
+            };
+            last;
+         }
+      }
+   }
+   
+   return $self->{_clone_method}->($self);
+}
+
+
 
 
 sub DESTROY { }
