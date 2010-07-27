@@ -8,15 +8,21 @@ use vars ('$AUTOLOAD');
 our $_CLONE_METHODS = [
    {
       package => 'Clone::Fast',
-      method => 'clone'
+      call => sub {
+         Clone::Fast::clone(shift);
+      }
    },
    {
       package => 'Clone::More',
-      method => 'clone'
+      call => sub {
+         Clone::More::clone(shift);
+      }
    },
    {
-      package => 'Storage',
-      method => 'dclone'
+      package => 'Storable',
+      call => sub {
+         Storable::dclone(shift);
+      }
    }
 ];
 
@@ -236,10 +242,10 @@ See L</parse> for further information.
 sub clone {
    my $self = shift;
    
-   unless ( ref( $self->{_clone_method} ) == 'CODE' ) {
+   unless ( ref( $self->{_clone_method} ) eq 'CODE' ) {
       foreach( @{ $_CLONE_METHODS } ) {
          my $package = $_->{package};
-         my $method  = $_->{method};
+         my $call  = $_->{call};
          
          eval qq{
             require $package;
@@ -247,9 +253,7 @@ sub clone {
          };
          
          unless( $@ ) {
-            $self->{_clone_method} = sub {
-               $package->$method(shift);
-            };
+            $self->{_clone_method} = $call;
             last;
          }
       }
