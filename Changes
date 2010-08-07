@@ -1,5 +1,8 @@
 Revision history for Text-FixedWidth
 
+0.06_01 2010-08-07
+        - Testing warnings.  (jhannah)
+
 0.06    2009-06-15
         Added more helpful warning instead of this Perl warning:
         Argument "" isn't numeric in sprintf at Text/FixedWidth.pm line 162.

@@ -1,4 +1,4 @@
-use Test::More(tests => 29);
+use Test::More(tests => 31);
 use Test::Warn;
 use Text::FixedWidth;
 use warnings;
@@ -52,6 +52,12 @@ warning_like
     "auto_truncate('bogus') throws warning";
 
 ok($fw->set_points(""),                        "set a numeric to zero-length string");
+warning_like 
+    { $fw->string } 
+    qr/Text::FixedWidth attribute 'points' contains '' which is not numeric/,
+    "string() for non-numerics formatted for numeric throws warning";
+
+ok($fw->set_points(undef),                     "set a numeric to undef");
 warning_like 
     { $fw->string } 
     qr/Text::FixedWidth attribute 'points' contains '' which is not numeric/,

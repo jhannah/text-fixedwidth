@@ -11,7 +11,7 @@ Text::FixedWidth - Easy OO manipulation of fixed width text files
 
 =cut
 
-our $VERSION = '0.06';
+our $VERSION = '0.06_01';
 
 =head1 SYNOPSIS
 
@@ -145,8 +145,15 @@ sub string {
       $sprintf = $self->{_attributes}{$att}{sprintf};
 
       if (defined ($value) and length($value) > $length) {
-         warn "string() error! Length of $att cannot exceed $length, but it does. Please shorten the value '$value'";
+         warn "string() error! " . ref($self) . " length of attribute '$att' cannot exceed '$length', but it does. Please shorten the value '$value'";
          return 0;
+      }
+      if (not defined $value) {
+         $value = '';
+      }
+      unless ($sprintf) {
+         warn "string() error! " . ref($self) . " sprintf not set on attribute $att. Using '%s'";
+         $sprintf = '%s';
       }
 
       my $tmp;
