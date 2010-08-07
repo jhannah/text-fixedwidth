@@ -11,7 +11,7 @@ Text::FixedWidth - Easy OO manipulation of fixed width text files
 
 =cut
 
-our $VERSION = '0.06_01';
+our $VERSION = '0.07_01';
 
 =head1 SYNOPSIS
 
@@ -159,17 +159,19 @@ sub string {
       my $tmp;
       if (
          $sprintf =~ /\%\d*[duoxefgXEGbB]/ && (       # perldoc -f sprintf
+            (not defined $value) || 
             $value eq "" ||
             $value !~ /^(\d+\.?\d*|\.\d+)$/        # match valid number
          )
       ) {
-         warn "string() error! " . ref($self) . " attribute '$att' contains '$value' which is not numeric, yet the sprintf '$sprintf' appears to be numeric. Using 0";
+         $value = '' if (not defined $value);
+         warn "string() warning: " . ref($self) . " attribute '$att' contains '$value' which is not numeric, yet the sprintf '$sprintf' appears to be numeric. Using 0";
          $value = 0;
       }
       $tmp = sprintf($sprintf, (defined $value ? $value : ""));
 
       if (length($tmp) != $length) {
-         die "string() error! " . ref($self) . " is loaded with an sprintf format which returns a string that is NOT the correct length! Please correct the class! The error occured on attribute '$att' converting value '$value' via sprintf '$sprintf', which is '$tmp', which is not '$length' characters long";
+         die "string() error: " . ref($self) . " is loaded with an sprintf format which returns a string that is NOT the correct length! Please correct the class! The error occured on attribute '$att' converting value '$value' via sprintf '$sprintf', which is '$tmp', which is not '$length' characters long";
       }
 
       $return .= $tmp;

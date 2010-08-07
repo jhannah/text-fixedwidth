@@ -1,26 +1,28 @@
 Revision history for Text-FixedWidth
 
-0.06_01 2010-08-07
-        - Testing warnings.  (jhannah)
+0.07_01 2010-08-07
+        - Testing additional warnings.  (jhannah)
 
-0.06    2009-06-15
-        Added more helpful warning instead of this Perl warning:
-        Argument "" isn't numeric in sprintf at Text/FixedWidth.pm line 162.
+0.07    2009-06-16 jhannah
+        - Found another instance of the warning below. Now tests for "" and undef.
+        - Added more helpful warning instead of this Perl warning:
+          Argument "" isn't numeric in sprintf at Text/FixedWidth.pm line 162.
 
-0.05    2009-04-29
+0.05    2009-04-29 jhannah
         - Suppress spurious warnings when at attribute is explicitly set to undef.
-        - Carp out a warning if the user tries to set auto_truncate() on an attribute that doesn't exit.
+        - Carp out a warning if the user tries to set auto_truncate() on an 
+          attribute that doesn't exit.
 
-0.04    2008-09-03
+0.04    2008-09-03 jhannah
         Added SVN tags so I don't forget where this lives.  :)
         t/boilerplate.t tasks are done, so removed TODO-ishness
 
-0.03    2008-09-03
+0.03    2008-09-03 jhannah
         Fixing POD, general cleanup
 
-0.02    2008-09-02
+0.02    2008-09-02 jhannah
         Fixing META.yml
 
-0.01    2008-09-02
+0.01    2008-09-02 jhannah
         First version, released on an unsuspecting world.
 
