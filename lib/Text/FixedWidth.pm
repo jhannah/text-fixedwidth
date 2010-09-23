@@ -4,27 +4,7 @@ use warnings;
 use strict;
 use Carp;
 use vars ('$AUTOLOAD');
-
-our $_CLONE_METHODS = [
-   {
-      package => 'Clone::Fast',
-      call => sub {
-         Clone::Fast::clone(shift);
-      }
-   },
-   {
-      package => 'Clone::More',
-      call => sub {
-         Clone::More::clone(shift);
-      }
-   },
-   {
-      package => 'Storable',
-      call => sub {
-         Storable::dclone(shift);
-      }
-   }
-];
+use Storable ();
 
 =head1 NAME
 
@@ -135,7 +115,7 @@ sub parse {
 
    die ref($self).":Please provide a string argument" if (!$args{string});
    my $string = $args{string};
-   
+
    $self = $self->clone if $args{clone};
 
    my $offset = 0;
@@ -182,7 +162,7 @@ sub string {
       my $tmp;
       if (
          $sprintf =~ /\%\d*[duoxefgXEGbB]/ && (       # perldoc -f sprintf
-            (not defined $value) || 
+            (not defined $value) ||
             $value eq "" ||
             $value !~ /^(\d+\.?\d*|\.\d+)$/        # match valid number
          )
@@ -248,25 +228,7 @@ See L</parse> for further information.
 
 sub clone {
    my $self = shift;
-   
-   unless ( ref( $self->{_clone_method} ) eq 'CODE' ) {
-      foreach( @{ $_CLONE_METHODS } ) {
-         my $package = $_->{package};
-         my $call  = $_->{call};
-         
-         eval qq{
-            require $package;
-            $package->import();
-         };
-         
-         unless( $@ ) {
-            $self->{_clone_method} = $call;
-            last;
-         }
-      }
-   }
-   
-   return $self->{_clone_method}->($self);
+   return Storable::dclone($self);
 }
 
 
@@ -325,7 +287,7 @@ sub AUTOLOAD {
 
 =head1 ALTERNATIVES
 
-Other modules that may do similar things: 
+Other modules that may do similar things:
 L<Parse::FixedLength>,
 L<Text::FixedLength>,
 L<Data::FixedFormat>,
