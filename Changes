@@ -1,5 +1,8 @@
 Revision history for Text-FixedWidth
 
+0.08    2010-09-29 jhannah
+        CPAN Testers are happy. Bumping version, pushing.
+
 0.07_01 2010-09-28
         - Testing additional warnings.  (jhannah)
         - Use Storable::dclone() instead. (jmmills)
