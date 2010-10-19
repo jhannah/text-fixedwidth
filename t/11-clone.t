@@ -3,7 +3,7 @@ use warnings;
 use Test::More tests => 42;
 use Text::FixedWidth;
 
-my $fw = new_ok 'Text::FixedWidth';
+ok(my $fw = Text::FixedWidth->new());
 
 ok $fw->set_attributes(qw[
     fname undef %10s

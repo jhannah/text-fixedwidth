@@ -1,5 +1,9 @@
 Revision history for Text-FixedWidth
 
+0.08_01 2010-10-19 jhannah
+        - Stopped using new_ok(), which wasn't added to Test::More until 
+          0.81_01  Sat Sep  6 15:13:50 PDT 2008
+
 0.08    2010-09-29 jhannah
         CPAN Testers are happy. Bumping version, pushing.
 
