@@ -12,6 +12,11 @@ WriteMakefile(
         'Test::More' => 0,
         'Test::Warn' => 0,
     },
+    META_MERGE => {
+         resources => {
+             repository  =>  'https://github.com/jhannah/text-fixedwidth',
+         },
+    },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Text-FixedWidth-*' },
 );

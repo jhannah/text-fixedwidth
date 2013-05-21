@@ -12,7 +12,7 @@ Text::FixedWidth - Easy OO manipulation of fixed width text files
 
 =cut
 
-our $VERSION = '0.08_01';
+our $VERSION = '0.09';
 
 =head1 SYNOPSIS
 
