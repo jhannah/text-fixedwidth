@@ -1,5 +1,8 @@
 Revision history for Text-FixedWidth
 
+0.10    2013-05-26 jhannah
+        - Added getf_*
+
 0.09    2013-05-21 jhannah
         - Added link to github repo. 
 

@@ -12,7 +12,7 @@ Text::FixedWidth - Easy OO manipulation of fixed width text files
 
 =cut
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 =head1 SYNOPSIS
 
@@ -140,47 +140,64 @@ format that was specified during set_attributes().
 
 sub string {
    my ($self) = @_;
+   my $rval;
+   foreach my $att (@{$self->{_attribute_order}}) {
+      $rval .= $self->_getf($att);
+   } 
+   return $rval;
+}
+
+
+=head2 getf_*
+
+For the 'foo' attribute, we provide the getter get_foo() per the SYNOPSIS above. 
+But we also provide getf_foo(). get_* returns the current value in no particular format, 
+while getf_* returns the fixed-width formatted value.
+
+   $fw->get_fname;    # Jay          (no particular format)
+   $fw->getf_fname;   # '       Jay' (the format you specified)
+
+=cut
+
+sub _getf {
+   my ($self, $att) = @_;
 
    my ($value, $length, $sprintf, $return);
-   foreach my $att (@{$self->{_attribute_order}}) {
-      $value   = $self->{_attributes}{$att}{value};
-      $length  = $self->{_attributes}{$att}{length};
-      $sprintf = $self->{_attributes}{$att}{sprintf};
+   $value   = $self->{_attributes}{$att}{value};
+   $length  = $self->{_attributes}{$att}{length};
+   $sprintf = $self->{_attributes}{$att}{sprintf};
 
-      if (defined ($value) and length($value) > $length) {
-         warn "string() error! " . ref($self) . " length of attribute '$att' cannot exceed '$length', but it does. Please shorten the value '$value'";
-         return 0;
-      }
-      if (not defined $value) {
-         $value = '';
-      }
-      unless ($sprintf) {
-         warn "string() error! " . ref($self) . " sprintf not set on attribute $att. Using '%s'";
-         $sprintf = '%s';
-      }
-
-      my $tmp;
-      if (
-         $sprintf =~ /\%\d*[duoxefgXEGbB]/ && (       # perldoc -f sprintf
-            (not defined $value) ||
-            $value eq "" ||
-            $value !~ /^(\d+\.?\d*|\.\d+)$/        # match valid number
-         )
-      ) {
-         $value = '' if (not defined $value);
-         warn "string() warning: " . ref($self) . " attribute '$att' contains '$value' which is not numeric, yet the sprintf '$sprintf' appears to be numeric. Using 0";
-         $value = 0;
-      }
-      $tmp = sprintf($sprintf, (defined $value ? $value : ""));
-
-      if (length($tmp) != $length) {
-         die "string() error: " . ref($self) . " is loaded with an sprintf format which returns a string that is NOT the correct length! Please correct the class! The error occured on attribute '$att' converting value '$value' via sprintf '$sprintf', which is '$tmp', which is not '$length' characters long";
-      }
-
-      $return .= $tmp;
+   if (defined ($value) and length($value) > $length) {
+      warn "string() error! " . ref($self) . " length of attribute '$att' cannot exceed '$length', but it does. Please shorten the value '$value'";
+      return 0;
+   }
+   if (not defined $value) {
+      $value = '';
+   }
+   unless ($sprintf) {
+      warn "string() error! " . ref($self) . " sprintf not set on attribute $att. Using '%s'";
+      $sprintf = '%s';
    }
 
-   return $return;
+   my $rval;
+   if (
+      $sprintf =~ /\%\d*[duoxefgXEGbB]/ && (       # perldoc -f sprintf
+         (not defined $value) ||
+         $value eq "" ||
+         $value !~ /^(\d+\.?\d*|\.\d+)$/        # match valid number
+      )
+   ) {
+      $value = '' if (not defined $value);
+      warn "string() warning: " . ref($self) . " attribute '$att' contains '$value' which is not numeric, yet the sprintf '$sprintf' appears to be numeric. Using 0";
+      $value = 0;
+   }
+   $rval = sprintf($sprintf, (defined $value ? $value : ""));
+
+   if (length($rval) != $length) {
+      die "string() error: " . ref($self) . " is loaded with an sprintf format which returns a string that is NOT the correct length! Please correct the class! The error occured on attribute '$att' converting value '$value' via sprintf '$sprintf', which is '$rval', which is not '$length' characters long";
+   }
+
+   return $rval;
 }
 
 
@@ -246,42 +263,60 @@ sub AUTOLOAD {
   if ($AUTOLOAD =~ /.*::get_(\w+)/) {
     my $att = $1;
     *{$AUTOLOAD} = sub {
-      croak "Can't get_$att(). No such attribute: $att" unless (defined $_[0]->{_attributes}{$att});
-      my $ret = $_[0]->{_attributes}{$att}{value};
-      $ret =~ s/\s+$// if $ret;
-      $ret =~ s/^\s+// if $ret;
-      return $ret;
+      $_[0]->_get($att);
+    };
+    return &{$AUTOLOAD};
+  }
+
+  if ($AUTOLOAD =~ /.*::getf_(\w+)/) {
+    my $att = $1;
+    *{$AUTOLOAD} = sub {
+      $_[0]->_getf($att);
     };
     return &{$AUTOLOAD};
   }
 
   if ($AUTOLOAD =~ /.*::set_(\w+)/) {
-    my $att  = $1;
+    my $att = $1;
     *{$AUTOLOAD} = sub {
-      my $self = $_[0];
-      my $val  = $_[1];
-      croak "Can't set_$att(). No such attribute: $att" unless (defined $self->{_attributes}{$att});
-      if (defined $self->{_attributes}{$att}) {
-        if (defined $val && length($val) > $self->{_attributes}{$att}{length}) {
-          if ($self->{_auto_truncate}{$att}) {
-            $val = substr($val, 0, $self->{_attributes}{$att}{length});
-            $self->{_attributes}{$att}{value} = $val;
-          } else {
-            carp "Can't set_$att('$val'). Value must be " .
-              $self->{_attributes}{$att}{length} . " characters or shorter";
-            return undef;
-          }
-        }
-        $self->{_attributes}{$att}{value} = $val;
-        return 1;
-      } else {
-        return 0;
-      }
+      $_[0]->_set($att, $_[1]);
     };
     return &{$AUTOLOAD};
   }
 
   confess ref($_[0]).":No such method: $AUTOLOAD";
+}
+
+
+sub _get { 
+  my ($self, $att) = @_;
+  croak "Can't get_$att(). No such attribute: $att" unless (defined $self->{_attributes}{$att});
+  my $ret = $self->{_attributes}{$att}{value};
+  $ret =~ s/\s+$// if $ret;
+  $ret =~ s/^\s+// if $ret;
+  return $ret;
+}
+
+
+sub _set { 
+  my ($self, $att, $val) = @_;
+  croak "Can't set_$att(). No such attribute: $att" unless (defined $self->{_attributes}{$att});
+  if (defined $self->{_attributes}{$att}) {
+    if (defined $val && length($val) > $self->{_attributes}{$att}{length}) {
+      if ($self->{_auto_truncate}{$att}) {
+        $val = substr($val, 0, $self->{_attributes}{$att}{length});
+        $self->{_attributes}{$att}{value} = $val;
+      } else {
+        carp "Can't set_$att('$val'). Value must be " .
+          $self->{_attributes}{$att}{length} . " characters or shorter";
+        return undef;
+      }
+    }
+    $self->{_attributes}{$att}{value} = $val;
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
 
@@ -313,25 +348,21 @@ You can also look for information at:
 
 =over 4
 
+=item * MetaCPAN
+
+L<https://metacpan.org/release/Text-FixedWidth>
+
 =item * RT: CPAN's request tracker
 
 L<http://rt.cpan.org/NoAuth/Bugs.html?Dist=Text-FixedWidth>
 
-=item * AnnoCPAN: Annotated CPAN documentation
-
-L<http://annocpan.org/dist/Text-FixedWidth>
-
-=item * CPAN Ratings
-
-L<http://cpanratings.perl.org/d/Text-FixedWidth>
-
-=item * Search CPAN
-
-L<http://search.cpan.org/dist/Text-FixedWidth>
-
 =item * Source code
 
 L<http://github.com/jhannah/text-fixedwidth>
+
+=item * AnnoCPAN: Annotated CPAN documentation
+
+L<http://annocpan.org/dist/Text-FixedWidth>
 
 =back
 
