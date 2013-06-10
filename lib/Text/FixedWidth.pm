@@ -88,7 +88,7 @@ sub set_attributes {
       if (exists $self->{_attributes}{$att}) {
          die "You already set attribute name '$att'! You can't set it again! All your attribute names must be unique";
       }
-      if ($value eq "undef") { $value = undef; }
+      if ($value && $value eq "undef") { $value = undef; }
       $self->{_attributes}{$att}{sprintf} = $sprintf;
       $self->{_attributes}{$att}{value}   = $value;
       my ($length) = ($sprintf =~ /(\d+)/g);
