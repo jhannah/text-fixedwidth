@@ -4,11 +4,13 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
     NAME                => 'Text::FixedWidth',
-    AUTHOR              => 'Jay Hannah <jay@jays.net>',
+    AUTHOR              => 'Jay Hannah <jay.hannah@iinteractive.com>',
     VERSION_FROM        => 'lib/Text/FixedWidth.pm',
     ABSTRACT_FROM       => 'lib/Text/FixedWidth.pm',
     PL_FILES            => {},
     PREREQ_PM => {
+    },
+    TEST_REQUIRES => {
         'Test::More' => 0,
         'Test::Warn' => 0,
     },

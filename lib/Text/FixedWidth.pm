@@ -12,7 +12,7 @@ Text::FixedWidth - Easy OO manipulation of fixed width text files
 
 =cut
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 =head1 SYNOPSIS
 
@@ -82,7 +82,6 @@ use to read and write this attribute from/to a string.
 sub set_attributes {
    my ($self, @att) = @_;
 
-   my $order_by = 1;
    unless (@att % 3 == 0) { die "set_attributes() requires sets of 3 parameters"; }
    while (@att) {
       my ($att, $value, $sprintf) = splice @att, 0, 3;
@@ -90,13 +89,47 @@ sub set_attributes {
          die "You already set attribute name '$att'! You can't set it again! All your attribute names must be unique";
       }
       if ($value eq "undef") { $value = undef; }
-      $order_by++;
       $self->{_attributes}{$att}{sprintf} = $sprintf;
       $self->{_attributes}{$att}{value}   = $value;
       my ($length) = ($sprintf =~ /(\d+)/g);
       $self->{_attributes}{$att}{length}  = $length;
       push @{$self->{_attribute_order}}, $att;
    }
+
+   return 1;
+}
+
+
+=head2 set_attribute
+
+Like set_attributes, but only sets one attribute at a time, via named parameters. 
+
+  $fw->set_attribute(
+    name    => 'lname',
+    default => undef,
+    format  => '%10s',
+  );
+
+=cut
+
+sub set_attribute {
+   my ($self, %args) = @_;
+   my $att =     $args{name};
+   my $value =   $args{default};
+   my $sprintf = $args{format};
+
+   unless ($att)     { die "set_attribute() requires a 'name' argument" }
+   unless ($sprintf) { die "set_attribute() requires a 'format' argument" }
+
+   if (exists $self->{_attributes}{$att}) {
+      die "You already set attribute name '$att'! You can't set it again! All your attribute names must be unique";
+   }
+   if ($value && $value eq "undef") { $value = undef; }
+   $self->{_attributes}{$att}{sprintf} = $sprintf;
+   $self->{_attributes}{$att}{value}   = $value;
+   my ($length) = ($sprintf =~ /(\d+)/g);
+   $self->{_attributes}{$att}{length}  = $length;
+   push @{$self->{_attribute_order}}, $att;
 
    return 1;
 }
