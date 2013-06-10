@@ -102,13 +102,26 @@ sub set_attributes {
 
 =head2 set_attribute
 
-Like set_attributes, but only sets one attribute at a time, via named parameters. 
+Like set_attributes, but only sets one attribute at a time, via named parameters:
 
   $fw->set_attribute(
     name    => 'lname',
     default => undef,
     format  => '%10s',
   );
+
+If an sprintf 'format' is insufficiently flexible, you can hand in a code reference 
+and the length of response expected. For example, if you need a money format without
+a period: 
+
+  $fw->set_attribute(
+    name    => 'points2',
+    reader  => sub { sprintf("%07d", $_[0]->get_points2 * 100) },
+    length  => 7,
+  );
+  $fw->set_points2(13.2);
+  $fw->get_points2;        # 13.2
+  $fw->getf_points2;       # 0001320
 
 =cut
 
@@ -117,18 +130,31 @@ sub set_attribute {
    my $att =     $args{name};
    my $value =   $args{default};
    my $sprintf = $args{format};
+   my $reader =  $args{reader};
+   my $length =  $args{length};
 
-   unless ($att)     { die "set_attribute() requires a 'name' argument" }
-   unless ($sprintf) { die "set_attribute() requires a 'format' argument" }
-
+   unless ($att)     { 
+      die "set_attribute() requires a 'name' argument";
+   }
+   unless ($sprintf || $reader) { 
+      die "set_attribute() requires a 'format' or a 'reader' argument"; 
+   }
+   if ($reader && not defined $length) { 
+      die "set_attribute() requires a 'length' when a 'reader' argument is provided";
+   }
    if (exists $self->{_attributes}{$att}) {
       die "You already set attribute name '$att'! You can't set it again! All your attribute names must be unique";
    }
+
    if ($value && $value eq "undef") { $value = undef; }
-   $self->{_attributes}{$att}{sprintf} = $sprintf;
    $self->{_attributes}{$att}{value}   = $value;
-   my ($length) = ($sprintf =~ /(\d+)/g);
-   $self->{_attributes}{$att}{length}  = $length;
+   if ($sprintf) {
+      $self->{_attributes}{$att}{sprintf} = $sprintf;
+      ($length) = ($sprintf =~ /(\d+)/g);
+   } else {
+      $self->{_attributes}{$att}{reader} = $reader;
+   }
+   $self->{_attributes}{$att}{length} = $length;
    push @{$self->{_attribute_order}}, $att;
 
    return 1;
@@ -195,10 +221,17 @@ while getf_* returns the fixed-width formatted value.
 sub _getf {
    my ($self, $att) = @_;
 
-   my ($value, $length, $sprintf, $return);
-   $value   = $self->{_attributes}{$att}{value};
-   $length  = $self->{_attributes}{$att}{length};
-   $sprintf = $self->{_attributes}{$att}{sprintf};
+   my $value   = $self->{_attributes}{$att}{value};
+   my $length  = $self->{_attributes}{$att}{length};
+   my $sprintf = $self->{_attributes}{$att}{sprintf};
+   my $reader =  $self->{_attributes}{$att}{reader};
+   if ($reader) {
+      my $rval = $reader->($self);
+      if (length($rval) != $length) {
+         die "string() error: " . ref($self) . " is loaded with a 'reader' which returned a string of length " . length($rval) . ", but 'length' was set to $length. Please correct the class. The error occured on attribute '$att' converting value '$value' to '$rval'";
+      }
+      return $rval; 
+   }
 
    if (defined ($value) and length($value) > $length) {
       warn "string() error! " . ref($self) . " length of attribute '$att' cannot exceed '$length', but it does. Please shorten the value '$value'";
@@ -227,7 +260,7 @@ sub _getf {
    $rval = sprintf($sprintf, (defined $value ? $value : ""));
 
    if (length($rval) != $length) {
-      die "string() error: " . ref($self) . " is loaded with an sprintf format which returns a string that is NOT the correct length! Please correct the class! The error occured on attribute '$att' converting value '$value' via sprintf '$sprintf', which is '$rval', which is not '$length' characters long";
+      die "string() error: " . ref($self) . " is loaded with an sprintf format which returns a string that is NOT the correct length. Please correct the class. The error occured on attribute '$att' converting value '$value' via sprintf '$sprintf', which is '$rval', which is not '$length' characters long";
    }
 
    return $rval;
