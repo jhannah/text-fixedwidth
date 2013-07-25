@@ -1,5 +1,9 @@
 Revision history for Text-FixedWidth
 
+0.13    2013-07-25 jhannah
+        - Whoops! use %07.0f not %07d or you may suffer off-by-a-penny rounding errors. 
+          Thanks mauke in irc.perl.org #perl-help
+
 0.12    2013-07-25 jhannah
         - Added optional 'writer' subs to set_attribute for when you need to do
           magic when setting attributes. 

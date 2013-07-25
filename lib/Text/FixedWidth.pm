@@ -12,7 +12,7 @@ Text::FixedWidth - Easy OO manipulation of fixed width text files
 
 =cut
 
-our $VERSION = '0.12';
+our $VERSION = '0.13';
 
 =head1 SYNOPSIS
 
@@ -115,7 +115,7 @@ and also define 'length'. For example, if you need a money format without a peri
 
   $fw->set_attribute(
     name    => 'points2',
-    reader  => sub { sprintf("%07d", $_[0]->get_points2 * 100) },
+    reader  => sub { sprintf("%07.0f", $_[0]->get_points2 * 100) },
     length  => 7,
   );
   $fw->set_points2(13.2);
