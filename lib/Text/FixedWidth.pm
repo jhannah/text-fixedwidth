@@ -12,7 +12,7 @@ Text::FixedWidth - Easy OO manipulation of fixed width text files
 
 =cut
 
-our $VERSION = '0.11';
+our $VERSION = '0.12';
 
 =head1 SYNOPSIS
 
@@ -110,9 +110,8 @@ Like set_attributes, but only sets one attribute at a time, via named parameters
     format  => '%10s',
   );
 
-If an sprintf 'format' is insufficiently flexible, you can hand in a code reference 
-and the length of response expected. For example, if you need a money format without
-a period: 
+If an sprintf 'format' is insufficiently flexible, you can set 'reader' to a code reference 
+and also define 'length'. For example, if you need a money format without a period: 
 
   $fw->set_attribute(
     name    => 'points2',
@@ -123,6 +122,18 @@ a period:
   $fw->get_points2;        # 13.2
   $fw->getf_points2;       # 0001320
 
+Similarly, you can set 'writer' to a code reference for arbitrary manipulations when 
+setting attributes:
+
+  $fw->set_attribute(
+    name    => 'points3',
+    writer  => sub { $_[1] / 2 },
+    format  => '%-6s',
+  );
+  $fw->set_points3(3);
+  $fw->get_points3;        # 1.5
+  $fw->getf_points3;       # '1.5   '
+
 =cut
 
 sub set_attribute {
@@ -131,6 +142,7 @@ sub set_attribute {
    my $value =   $args{default};
    my $sprintf = $args{format};
    my $reader =  $args{reader};
+   my $writer =  $args{writer};
    my $length =  $args{length};
 
    unless ($att)     { 
@@ -155,6 +167,7 @@ sub set_attribute {
       $self->{_attributes}{$att}{reader} = $reader;
    }
    $self->{_attributes}{$att}{length} = $length;
+   $self->{_attributes}{$att}{writer} = $writer;
    push @{$self->{_attribute_order}}, $att;
 
    return 1;
@@ -366,15 +379,20 @@ sub _get {
 
 sub _set { 
   my ($self, $att, $val) = @_;
+
+  my $length = $self->{_attributes}{$att}{length};
+  my $writer = $self->{_attributes}{$att}{writer};
+
   croak "Can't set_$att(). No such attribute: $att" unless (defined $self->{_attributes}{$att});
   if (defined $self->{_attributes}{$att}) {
-    if (defined $val && length($val) > $self->{_attributes}{$att}{length}) {
+    if ($writer) {
+      $val = $writer->($self, $val);
+    } elsif (defined $val && length($val) > $length) {
       if ($self->{_auto_truncate}{$att}) {
-        $val = substr($val, 0, $self->{_attributes}{$att}{length});
+        $val = substr($val, 0, $length);
         $self->{_attributes}{$att}{value} = $val;
       } else {
-        carp "Can't set_$att('$val'). Value must be " .
-          $self->{_attributes}{$att}{length} . " characters or shorter";
+        carp "Can't set_$att('$val'). Value must be $length characters or shorter";
         return undef;
       }
     }

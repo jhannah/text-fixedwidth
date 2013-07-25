@@ -40,21 +40,7 @@ perldoc command.
 
 You can also look for information at:
 
-    RT, CPAN's request tracker
-        http://rt.cpan.org/NoAuth/Bugs.html?Dist=Text-FixedWidth
-
-    AnnoCPAN, Annotated CPAN documentation
-        http://annocpan.org/dist/Text-FixedWidth
-
-    CPAN Ratings
-        http://cpanratings.perl.org/d/Text-FixedWidth
-
-    Search CPAN
-        http://search.cpan.org/dist/Text-FixedWidth
-
-    Source code
-        http://github.com/jhannah/text-fixedwidth
-
+    https://metacpan.org/module/Text::FixedWidth
 
 COPYRIGHT AND LICENCE
 

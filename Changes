@@ -1,5 +1,9 @@
 Revision history for Text-FixedWidth
 
+0.12    2013-07-25 jhannah
+        - Added optional 'writer' subs to set_attribute for when you need to do
+          magic when setting attributes. 
+
 0.11    2013-06-09 jhannah
         - Added set_attribute(), which allows anonymous subs to be set into 'reader'
           for when simple sprintf 'format' attributes prove insufficiently flexible.
